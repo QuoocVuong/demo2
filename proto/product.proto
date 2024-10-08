@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package product;
+
+service ProductService {
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse) {}
+  // ... Các phương thức gRPC khác cho product service
+}
+
+message GetProductRequest {
+  int32 id = 1;
+}
+
+message GetProductResponse {
+  int32 id = 1;
+  string name = 2;
+  // ... Các trường dữ liệu khác cho sản phẩm
+}
