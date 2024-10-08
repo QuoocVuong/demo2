@@ -2,18 +2,32 @@ syntax = "proto3";
 
 package inventory;
 
-option go_package = "github.com/Q.Vuong/demo2/proto"; // Thay thế bằng đường dẫn thực tế
-
 service InventoryService {
-  rpc GetInventory (GetInventoryRequest) returns (GetInventoryResponse);
+  rpc GetTonKho(GetTonKhoRequest) returns (GetTonKhoResponse);
+  rpc GetAllTonKhos(GetAllTonKhosRequest) returns (GetAllTonKhosResponse);
+  // ... các RPCs khác cho Inventory service
 }
 
-message GetInventoryRequest {
-  int32 product_id = 1;
+message GetTonKhoRequest {
+  string id = 1;
 }
 
-message GetInventoryResponse {
-  int32 product_id = 1;
-  int32 quantity = 2;
-  string error = 3; // Thêm trường error để trả về thông báo lỗi
+message GetTonKhoResponse {
+  TonKho tonKho = 1;
+}
+
+message GetAllTonKhosRequest {
+
+}
+
+message GetAllTonKhosResponse {
+  repeated TonKho tonKhos = 1;
+}
+
+message TonKho {
+  int32 id = 1;
+  int32 san_pham_id = 2;
+  int32 kho_hang_id = 3;
+  int32 so_luong = 4;
+  string ngay_cap_nhat = 5;
 }

@@ -1,17 +1,19 @@
 package main
 
 import (
-
+	"fmt"
 	_ "fmt"
+	"google.golang.org/grpc"
 	"log"
-
+	"net"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"handlers" // Import handlers từ package của bạn
-	"models"
-	"repository"// Import models của bạn
+	"product-catalog-service/handlers" // Import handlers từ package của bạn
+	"product-catalog-service/models"   // Import models của bạn
+	pb "product-catalog-service/proto" // Import package proto của product service
+	"product-catalog-service/repository"
 
 	pb "github.com/Q.Vuong/demo2/proto" // Thay thế bằng đường dẫn thực tế
 )
@@ -32,20 +34,36 @@ func main() {
 	if err != nil {
 		log.Fatal("Không thể migrate schema:", err)
 	}
-	// Khởi tạo gRPC connection đến inventory-service
-	conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	// Khởi tạo gRPC server
+	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("Không thể kết nối đến inventory-service: %v", err)
+		log.Fatalf("Lỗi khi listen: %v", err)
 	}
-	defer conn.Close()
-	var inventoryClient := pb.NewInventoryServiceClient(conn)
+	s := grpc.NewServer() // Tạo gRPC server
+
+	// Đăng ký ProductService
+	pb.RegisterProductServiceServer(s, &handlers.ProductHandler{
+		NhomHangRepository:  nhomHangRepo,
+		SanPhamRepository:   sanPhamRepo,
+		MucTuHangRepository: mucTuHangRepo,
+	})
+
+	fmt.Println("Product Catalog Service listening on port 50051")
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Lỗi khi serve: %v", err)
+	}
+
+	//s := grpc.NewServer()
+	//
+	//defer conn.Close()
+	//var inventoryClient := pb.NewInventoryServiceClient(conn)
 	// Khởi tạo repositories
 	nhomHangRepo := repository.NewGormNhomHangRepository(db)
 	sanPhamRepo := repository.NewGormSanPhamRepository(db)
 	mucTuHangRepo := repository.NewGormMucTuHangRepository(db)
 
 	// Khởi tạo handlers với inventoryClient
-	handlers.InitProductHandler(nhomHangRepo,sanPhamRepo,mucTuHangRepo /* ... các repository khác, */ inventoryClient)
+	handlers.InitProductHandler(nhomHangRepo, sanPhamRepo, mucTuHangRepo, inventoryClient)
 
 	// Khởi tạo handlers
 	handlers.InitNhomHangHandler(nhomHangRepo)

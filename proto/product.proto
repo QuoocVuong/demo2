@@ -3,16 +3,30 @@ syntax = "proto3";
 package product;
 
 service ProductService {
-  rpc GetProduct (GetProductRequest) returns (GetProductResponse) {}
-  // ... Các phương thức gRPC khác cho product service
+  rpc GetSanPham(GetSanPhamRequest) returns (GetSanPhamResponse);
+  rpc GetAllSanPhams(GetAllSanPhamsRequest) returns (GetAllSanPhamsResponse);
+  // ... (Các RPCs khác cho Product service)
 }
 
-message GetProductRequest {
-  int32 id = 1;
+message GetSanPhamRequest {
+  string id = 1;
 }
 
-message GetProductResponse {
+message GetSanPhamResponse {
+  SanPham sanPham = 1;
+}
+
+message GetAllSanPhamsRequest {
+}
+
+message GetAllSanPhamsResponse {
+  repeated SanPham sanPhams = 1;
+}
+
+message SanPham {
   int32 id = 1;
-  string name = 2;
-  // ... Các trường dữ liệu khác cho sản phẩm
+  string ma_hang = 2;
+  string ten_muc = 3;
+  int32 nhom_hang_id = 4;
+  // ... các trường khác của SanPham
 }

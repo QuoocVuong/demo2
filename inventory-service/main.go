@@ -15,6 +15,7 @@ import (
 	//"google.golang.org/grpc"
 	//pb "inventory-service/proto" // Import package proto của inventory service
 	pb "github.com/Q.Vuong/demo2/proto" // Thay thế bằng đường dẫn thực tế
+	pb "inventory-service/proto" // Import package proto của inventory service
 )
 
 var (
